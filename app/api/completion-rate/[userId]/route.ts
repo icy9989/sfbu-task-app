@@ -2,29 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/server-auth";
 
-// Get Task Completion Rate with Dynamic Route
+// Get Task Completion Rate 
 export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
     try {
         const { userId } = params;  // Correctly access the dynamic params
 
         if (!userId) {
-            return new NextResponse("User ID is required", { status: 400 });
+            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
         }
 
         // Ensure the user is authenticated
         const { currentUser } = await serverAuth();
         if (!currentUser) {
-            return new NextResponse("Unauthenticated", { status: 401 });
+            return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
         }
 
-        // Fetch the total and completed tasks for the user
-        const totalTasks = await prismadb.task.count({
-            where: { creatorId: userId }
-        });
-
-        const completedTasks = await prismadb.task.count({
-            where: { creatorId: userId, status: 'Completed' }
-        });
+        // Fetch total and completed tasks for the user
+        const [totalTasks, completedTasks] = await Promise.all([
+            prismadb.task.count({ where: { creatorId: userId } }),
+            prismadb.task.count({ where: { creatorId: userId, status: 'Completed' } })
+        ]);
 
         // Calculate the completion rate
         const completionRate = totalTasks > 0
@@ -37,7 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
             completionRate: `${completionRate}%`
         });
     } catch (error) {
-        console.log("[TASK_COMPLETION_RATE]", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        console.error("[TASK_COMPLETION_RATE]", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
