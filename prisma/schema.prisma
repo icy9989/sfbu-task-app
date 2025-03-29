@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String      @unique
+  hashedPassword String
+  teams          TeamMembers[]
+  createdTeams   Team[]      @relation("CreatedTeams")
+  createdTasks   Task[]      @relation("UserCreatedTasks")
+  assignedTasks  AssignmentTasks[]
+  comments       Comment[]
+  recommendations Recommendation[]
+  notifications  Notification[]
+  analytics      TaskAnalytics?
+  dashboardStats DashboardStats?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Team {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  adminId     String   @db.ObjectId
+  admin       User     @relation("CreatedTeams", fields: [adminId], references: [id])
+  members     TeamMembers[]
+  projects    Project[]
+  tasks       Task[]   // The relation to tasks (opposite of Task.team)
+  createdAt   DateTime @default(now())
+}
+
+model TeamMembers {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  teamId   String @db.ObjectId
+  team     Team   @relation(fields: [teamId], references: [id])
+  userId   String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id])
+  role     TeamRole  // "ADMIN" | "MEMBER"
+  joinedAt DateTime @default(now())
+}
+
+enum TeamRole {
+  ADMIN
+  MEMBER
+}
+
+model Task {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  startDate   DateTime
+  dueDate     DateTime
+  priority    Priority
+  category    String
+  tags        String[]   // Custom categorization
+  status      String
+  progress    Int       @default(0)  // 0 to 100%
+  isRecurring Boolean   @default(false)
+  creatorId   String   @db.ObjectId
+  creator     User     @relation("UserCreatedTasks", fields: [creatorId], references: [id])
+  
+  // Optional fields to make the task either individual or team-based
+  teamId      String?  @db.ObjectId   // Optional, task can be individual
+  team        Team?    @relation(fields: [teamId], references: [id])
+  
+  projectId   String?  @db.ObjectId   // Optional, task can be outside any project
+  project     Project? @relation(fields: [projectId], references: [id])
+
+  // Relation to other models
+  assignedTasks AssignmentTasks[]
+  subtasks    SubTask[]
+  comments    Comment[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model AssignmentTasks {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  taskId      String   @db.ObjectId
+  task        Task     @relation(fields: [taskId], references: [id])
+  assignedBy  String   @db.ObjectId
+  assignedTo  String   @db.ObjectId
+  assignedToUser User  @relation(fields: [assignedTo], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  message    String
+  type       String  // "Reminder" | "Deadline" | "System"
+  isRead     Boolean @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model DashboardStats {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @db.ObjectId  @unique
+  user             User     @relation(fields: [userId], references: [id])
+  totalTasks       Int
+  completedTasks   Int
+  overdueTasks     Int
+  completionRate   Float
+  activeProjects   Int
+  createdAt        DateTime @default(now())
+}
+
+model Project {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  teamId    String   @db.ObjectId
+  team      Team     @relation(fields: [teamId], references: [id])
+  tasks     Task[]   // The relation to tasks (opposite of Task.project)
+  createdAt DateTime @default(now())
+}
+
+model SubTask {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  taskId    String   @db.ObjectId
+  task      Task     @relation(fields: [taskId], references: [id])
+  title     String
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  taskId    String   @db.ObjectId
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  comment   String
+  timestamp DateTime @default(now())
+}
+
+model Recommendation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  category  String
+  startDate DateTime
+  dueDate   DateTime
+  createdAt DateTime @default(now())
+}
+
+model TaskAnalytics {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId  @unique
+  user            User     @relation(fields: [userId], references: [id])
+  totalTasks      Int
+  completedTasks  Int
+  completionRate  Float
+  topCategories   Json
+}
