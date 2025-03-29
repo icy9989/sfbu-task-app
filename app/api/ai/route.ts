@@ -1,8 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import prismadb from "@/lib/prismadb";
-import serverAuth from "@/lib/server-auth";
-
-export async function GET(req: NextRequest) {
+import { NextResponse } from "next/server";
+export async function GET() {
   try {
     // Fetch notifications for the current user
     const notifications = {

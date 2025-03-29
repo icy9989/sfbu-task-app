@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 }
 
 // Get all projects for a team
-export async function GET(req: Request) {
+export async function GET() {
     try {
       const { currentUser } = await serverAuth();
       if (!currentUser) return new NextResponse("Unauthenticated", { status: 401 });

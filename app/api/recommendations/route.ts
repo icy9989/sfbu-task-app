@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 import prismadb from "@/lib/prismadb";
-import serverAuth from "@/lib/server-auth";
 
 // Get AI-generated task suggestions
 export async function GET(req: NextRequest) {

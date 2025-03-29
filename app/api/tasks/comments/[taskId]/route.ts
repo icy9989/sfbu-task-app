@@ -1,37 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prismadb from '@/lib/prismadb';
 
-// Add a comment to a task
-export async function POST(req: NextRequest, { params }: { params: { taskId: string } }) {
-    try {
-        const { userId, comment } = await req.json(); // Extract userId and comment from request body
-
-        // Validate the request data
-        if (!params.taskId || !userId || !comment) {
-            return new NextResponse("Missing required fields", { status: 400 });
-        }
-
-        // Create a new comment for the task
-        const newComment = await prismadb.comment.create({
-            data: {
-                taskId: params.taskId as string,
-                userId: userId as string,
-                comment,
-            },
-        });
-
-        // Return success message
-        return NextResponse.json({
-            message: "Comment added successfully",
-            taskId: params.taskId,
-        });
-    } catch (error) {
-        console.log("[COMMENT_ADD_ERROR]", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
-    }
-}
-
-
 // Fetch comments for a task
 export async function GET(req: NextRequest, { params }: { params: { taskId: string } }) {
     try {

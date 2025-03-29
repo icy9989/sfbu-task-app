@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
 
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/server-auth";
 
 // GET /api/users/profile
-export async function GET(req: Request) {
+export async function GET() {
     try {
       const { currentUser } = await serverAuth();  // Authentication middleware
   

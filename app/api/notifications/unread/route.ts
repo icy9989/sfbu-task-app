@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 import serverAuth from "@/lib/server-auth";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const { currentUser } = await serverAuth();
     if (!currentUser) return new NextResponse("Unauthenticated", { status: 401 });

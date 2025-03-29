@@ -11,15 +11,6 @@ export async function POST(req: NextRequest) {
             return new NextResponse("Missing required fields", { status: 400 });
         }
 
-        // Create a new comment for the task
-        const newComment = await prismadb.comment.create({
-            data: {
-                taskId: taskId as string,
-                userId: userId as string,
-                comment,
-            },
-        });
-
         // Return success message
         return NextResponse.json({
             message: "Comment added successfully",

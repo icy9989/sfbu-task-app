@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 }
 
 // Get all tasks for the current user (either created or assigned)
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const { currentUser } = await serverAuth();
         if (!currentUser) return new NextResponse("Unauthenticated", { status: 401 });

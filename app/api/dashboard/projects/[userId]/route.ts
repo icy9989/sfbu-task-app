@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prismadb from '@/lib/prismadb';
-import serverAuth from "@/lib/server-auth"; // Assuming this is for user authentication
 
 export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
     try {

@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 }
 
 // GET /api/teams → List all teams
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const { currentUser } = await serverAuth();
 
