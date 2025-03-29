@@ -6,6 +6,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     try {
         // Validate userId
         if (!params.userId) {
+            
             return new NextResponse("User ID is required", { status: 400 });
         }
 
