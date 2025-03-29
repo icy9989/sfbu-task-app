@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
-\
+
 // Get all projects for a team
 export async function GET(req: Request) {
     try {
