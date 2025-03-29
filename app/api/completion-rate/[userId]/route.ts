@@ -28,6 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
             ? ((completedTasks / totalTasks) * 100).toFixed(2)
             : '0';
 
+        // Return the response with the calculated completion rate
         return NextResponse.json({
             totalTasks,
             completedTasks,
