@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/server-auth";
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params } : { params : { id : string }}) {
   try {
     // Ensure there's a current user after authentication
     const { currentUser } = await serverAuth();
