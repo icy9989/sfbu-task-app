@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import prismadb from '@/lib/prismadb';
 
 // Add a comment to a task
 export async function POST(req: NextRequest) {
