@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prismadb from '@/lib/prismadb';
 
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(req: Request, { params }: { params: { userId: string } }) {
     try {
         // Validate the userId parameter
         if (!params.userId) {
