@@ -113,7 +113,7 @@ model Notification {
 model DashboardStats {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   userId           String   @db.ObjectId  @unique
-  user             User     @relation(fields: [userId], references: [id])
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   totalTasks       Int
   completedTasks   Int
   overdueTasks     Int

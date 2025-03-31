@@ -4,6 +4,39 @@ import bcrypt from "bcrypt";
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/server-auth";
 
+
+/**
+ * @swagger
+ * /api/user:
+ *   post:
+ *     description: Registers a new user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the user.
+ *               email:
+ *                 type: string
+ *                 description: The email of the user.
+ *               password:
+ *                 type: string
+ *                 description: The password of the user.
+ *     responses:
+ *       200:
+ *         description: User successfully registered.
+ *       400:
+ *         description: Validation error. Missing required fields.
+ *       422:
+ *         description: Email already exists.
+ *       500:
+ *         description: Internal Server Error.
+ */
+
 export async function POST(req: Request) { 
     try {
         const { name, email, password } = await req.json();   

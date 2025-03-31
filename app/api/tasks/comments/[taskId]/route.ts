@@ -1,39 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import prismadb from '@/lib/prismadb';
+import prismadb from "@/lib/prismadb";
 
-// Fetch comments for a task
-export async function GET(req: NextRequest, { params }: { params: { taskId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { taskId: string } }) {
     try {
-    
-        // Validate the taskId
-        if (!params.taskId) {
-            return new NextResponse("Task ID is required", { status: 400 });
-        }
-
-        // Retrieve the comments for the specified task
-        const comments = await prismadb.comment.findMany({
-            where: { taskId: params.taskId as string },
+        const { taskId } = await params; //
+        // Correct way to access params
+        const comments = await prismadb.comment.findMany({    
+            where: { taskId },       
             orderBy: { timestamp: "asc" }, // Order by timestamp to get comments in chronological order
             include: {
                 user: {
-                    select: {
-                        name: true, // Include the user's name in the response
-                    }
-                }
-            }
+                    select: { id: true, name: true }, // Select relevant user fields
+                },
+            },
         });
 
-        // Format the comments with the user's name and return them
-        const formattedComments = comments.map(comment => ({
-            user: comment.user.name,
-            comment: comment.comment,
-            timestamp: comment.timestamp.toISOString(),
-        }));
-
-        return NextResponse.json(formattedComments);
+        return NextResponse.json(comments);
     } catch (error) {
-        console.log("[TASK_COMMENTS_FETCH]", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
     }
 }
-
