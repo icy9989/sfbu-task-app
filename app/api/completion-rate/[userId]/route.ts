@@ -3,12 +3,9 @@ import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/server-auth";
 
 // Get Task Completion Rate 
-export async function GET(
-  req: NextRequest, 
-  context: { params: { userId: string } } // context is passed to this function containing params
-) {
-  // Extract the userId from context.params (this is how you get dynamic route params)
-  const { userId } = context.params;
+export async function GET(req: NextRequest) {
+  // Extract the userId from the URL path
+  const userId = req.nextUrl.pathname.split("/").pop(); // Extract userId from the URL path
 
   try {
     // Ensure the userId is provided
