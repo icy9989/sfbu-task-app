@@ -18,7 +18,7 @@
     "clsx": "^2.1.1",
     "express": "^4.21.2",
     "lucide-react": "^0.483.0",
-    "next": "15.2.3",
+    "next": "14.0.3",
     "next-auth": "^4.24.11",
     "next-swagger-doc": "^0.4.1",
     "openai": "^4.89.0",
