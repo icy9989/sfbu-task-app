@@ -85,33 +85,28 @@ import serverAuth from "@/lib/server-auth";
 
 // GET /api/users/{id}
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-    try {
-      // Fetch the user by their unique ID, including related data like teams, notifications, and dashboard stats
-      const user = await prismadb.user.findUnique({
-        where: {
-          id: params.id
-        },
-        include: {
-          teams: {
-            include: {
-              team: true, // Include team details for the teams the user is part of
-            //   role: true  // Include the role the user has in each team
-            }
-          },
-          notifications: true,
-          dashboardStats: true
-        }
-      });
+  console.log("Received request for user ID:", params.id);
   
-      if (!user) {
-        return new NextResponse("User not found", { status: 404 });
+  try {
+    const user = await prismadb.user.findUnique({
+      where: { id: params.id },
+      include: {
+        teams: { include: { team: true } },
+        notifications: true,
+        dashboardStats: true
       }
-  
-      return NextResponse.json(user);
-    } catch (error) {
-      console.log("[USER_GET_BY_ID]", error);
-      return new NextResponse("Internal Server Error", { status: 500 });
+    });
+
+    if (!user) {
+      console.log("User not found:", params.id);
+      return new NextResponse("User not found", { status: 404 });
     }
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
 }
 
 
