@@ -8,11 +8,12 @@ type Props = {
 };
 
 function ReactSwagger({ spec }: Props) {
-  // Make sure spec is valid (in case you want to add extra validation or fallback)
+  // Ensure spec is valid
   if (!spec || typeof spec !== 'object') {
     return <div>Error: Swagger specification is invalid or missing.</div>;
   }
 
+  // Render Swagger UI with the spec
   return <SwaggerUI spec={spec} />;
 }
 
