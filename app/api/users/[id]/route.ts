@@ -24,8 +24,11 @@ import prismadb from '@/lib/prismadb';
  */
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
+    // Access the dynamic `id` from the path parameter
+    const { id } = params;
+
     const user = await prismadb.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         teams: { include: { team: true } },
         notifications: true,
@@ -34,7 +37,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     });
 
     if (!user) {
-      console.log('User not found:', params.id);
+      console.log('User not found:', id);
       return new NextResponse('User not found', { status: 404 });
     }
 
