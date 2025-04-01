@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prismadb from '@/lib/prismadb';
 
 /**
@@ -23,10 +23,9 @@ import prismadb from '@/lib/prismadb';
  *         description: Internal Server Error.
  */
 
-export async function GET(req: Request, { params }: { params: { id: string | string[] } }) {
+export async function GET(req: NextRequest) {
+  const id = req.nextUrl.pathname.split("/").pop();
   try {
-    // Ensure `id` is a string, even if `params.id` is an array
-    const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     // If `id` is missing, return an error
     if (!id) {
