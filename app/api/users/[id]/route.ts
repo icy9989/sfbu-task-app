@@ -22,11 +22,18 @@ import prismadb from '@/lib/prismadb';
  *       500:
  *         description: Internal Server Error.
  */
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  try {
-    // Access the dynamic `id` from the path parameter
-    const { id } = params;
 
+export async function GET(req: Request, { params }: { params: { id: string | string[] } }) {
+  try {
+    // Ensure `id` is a string, even if `params.id` is an array
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+    // If `id` is missing, return an error
+    if (!id) {
+      return new NextResponse('ID parameter is missing', { status: 400 });
+    }
+
+    // Fetch the user data from the database
     const user = await prismadb.user.findUnique({
       where: { id },
       include: {
@@ -36,11 +43,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       },
     });
 
+    // Handle case when user is not found
     if (!user) {
       console.log('User not found:', id);
       return new NextResponse('User not found', { status: 404 });
     }
 
+    // Return the user data if found
     return NextResponse.json(user);
   } catch (error) {
     console.error('Error fetching user:', error);
